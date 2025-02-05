@@ -1,0 +1,80 @@
+--subquery = query didalam query
+with 
+  master_transaction as (
+    select
+    o.order_id,
+    s.order_date,
+    s.ship_date,
+    s.ship_mode,
+    o.customer_id,
+    c.customer_name,
+    c.segment,
+    o.postal_code,
+    r.city,
+    r.country,
+    r.region,
+    r.state,
+    o.product_id,
+    p.product_name,
+    p.category,
+    p.subcategory,
+    o.sales,
+    o.quantity,
+    o.discount,
+    o.profit
+    from
+    `warehouse.orders` as o 
+      left join `warehouse.customer` as c on o.customer_id = c.customer_id
+      left join `warehouse.shipment` as s on o.order_id = s.order_id
+      left join `warehouse.product` as p on o.product_id = p.product_id
+      left join `warehouse.region` as r on o.postal_code = r.postal_code
+    )
+, value_per_person as (
+      select
+        customer_name,
+        city,
+        sum(sales) total_penjualan
+      from 
+        master_transaction
+      group by customer_name, city
+    )
+, kota_tajir as (
+  select 
+  city,
+  sum(sales) total_penjualan
+  from
+  master_transaction
+  group by city
+  order by sum(sales) desc
+  limit 1
+)
+, rerata_spending as (select 
+  city,
+  sum(sales) jumlah,
+  count(customer_id) jumlah_konsumen,
+  sum(sales)/count(customer_id) spending_konsumen,
+from
+  master_transaction
+where 
+city in (select city from kota_tajir
+)
+group by city)
+, spending_tajir as (
+select
+customer_name,
+city,
+total_penjualan
+from
+value_per_person
+where 
+total_penjualan>(select spending_konsumen from rerata_spending)
+order by total_penjualan desc)
+
+select 
+customer_name
+from
+spending_tajir
+where 
+city in (select city from kota_tajir
+)
+group by customer_name 

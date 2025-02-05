@@ -1,0 +1,39 @@
+--logika:
+--tabel pages berisi seluruh page_id
+--pages_like berisi page_id yang mempunyai like saja
+
+--cara 1 : menggunakan where
+SELECT 
+  page_id
+FROM pages 
+WHERE
+  page_id not in (select page_id from page_likes)
+  
+
+
+--logika:
+--tabel pages berisi seluruh page_id
+--pages_like berisi page_id yang mempunyai like saja
+
+--cara 1 : menggunakan where
+SELECT 
+  page_id
+FROM pages 
+WHERE
+  page_id not in (select page_id from page_likes)
+  
+
+
+--cara2
+--page_id yang dilike pasti ada tanggalnya
+--page_id yang tidak dilike tidak ada tanggal
+--join dulu kedua tabel
+
+SELECT
+  pages.pages_id
+FROM
+  pages inner join page_likes
+on pages.page_id = page_likes.page_id
+WHERE
+    pages_likes.liked_date is null
+group by pages.page_id

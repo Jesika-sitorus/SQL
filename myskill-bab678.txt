@@ -1,0 +1,193 @@
+select * from tokopaedi.orders
+
+--select : memilih kolom
+--* akan mengambil seluruh kolom
+select
+order_id,
+customer_id,
+quantity,
+ship_date
+from `tokopaedi.orders`
+where city = 'Urbandale'
+
+--ada berapa transaksi di dubuque?
+select
+order_id,
+customer_id,
+quantity,
+ship_date
+from `tokopaedi.orders`
+where city = 'Dubuque'
+
+--logika AND
+--mencari tahu siapa yang penghasilannya dibawah 300 per bulan dan 'punya tanggungan' mendapatkan BANSOS
+--kasus : anak yang pengghasilannya dibawah 300 tetapi tak punya tanggungan
+--kondisi 1 True , kondisi 2 False
+-- tidak dapat bansos
+
+
+select
+*
+from `tokopaedi.orders`
+where 
+city = 'New York City'
+AND 
+category = 'Furniture'
+
+--membandingkan data dari 2 kota New York City dan Des Moines
+select
+*
+from `tokopaedi.orders`
+where 
+city = 'New York City'OR city = 'Des Moines'
+AND 
+category = 'Furniture'
+
+--filter transaksi untung
+select 
+*
+from
+`tokopaedi.orders`
+where
+profit>0
+
+--memfilter data setelah tanggal 1 januari 2017 
+-- yyyy-mm-dd
+select
+*
+from
+`tokopaedi.orders`
+where (order_date >= '2017-01-01'and order_date <= '2017-01-31')
+and
+(city = 'New York City'or city = 'Des Moines')
+
+
+--penggunaan IN : mengurangi frekuensi function berulang
+select 
+*
+from `tokopaedi.orders`
+where city in ('New York','Los Angeles', 'Dubuque')
+
+
+--Mini Task
+--1.Tampilkan nama-nama konsumen segment Consumer yang pernah membeli meja
+select 
+customer_name,
+segment
+from `tokopaedi.orders`
+where subcategory = 'Tables'
+
+--2. Tampilkan nama-nama konsumen dari segment Corporate dan Home Office yang berasal dari kota Los Angeles dan bertransaksi selama tahun 2018.
+select distinct
+customer_name
+from
+`tokopaedi.orders`
+where 
+(order_date >= '2018-01-01' and order_date <= '2018-12-30')
+and
+(segment = 'Office'or segment = 'Home Office')
+and
+city = 'Los Angeles'
+
+
+--operator like
+--harus pakai %
+select
+*
+from 
+`tokopaedi.orders`
+where 
+customer_name like 'Benjamin%' --nama DEPANNYA BENJAMIN
+customer_name like '%Benjamin' --nama BELAKANG benjamin
+customer_name like '%Benjamin%' --nama TENGAH benjamin
+
+
+--query transaksi di kuartal 1 2017
+select
+*
+from
+`tokopaedi.orders`
+where
+order_date >= '2017-01-01' and order_date <= '2017-03-31'
+
+--penggunaan between
+--setiap batas bawah dan atas pada between, masuk ke kondisi
+select
+*
+from
+`tokopaedi.orders`
+where
+order_date between'2017-01-01' and '2017-03-31'
+
+--penggunaan order by (pengurutan) dengan ASC (terkecil)
+select
+*
+from
+`tokopaedi.orders`
+where
+order_date between'2017-01-01' and '2017-03-31'
+and profit>0
+order by profit asc
+
+
+--penggunaan order by (pengurutan) dengan DESC (Terbesar)
+select
+*
+from
+`tokopaedi.orders`
+where
+order_date between'2017-01-01' and '2017-03-31'
+and profit>0
+order by profit desc
+
+--penggunaan limit
+select
+*
+from
+`tokopaedi.orders`
+where
+order_date between'2017-01-01' and '2017-03-31'
+and profit>0
+order by profit desc
+limit 5
+
+
+--MINI TASK 8
+--1. Query transaksi yang merugikan saja yang terjadi di tahun 2018 hingga 2019 di kota Los Angeles. diurutkan dari kerugian terbesar
+select 
+*
+from
+`tokopaedi.orders`
+where
+profit < 0 
+and
+(order_date between '2018-01-01' and '2019-12-31')
+and
+city = 'Los Angeles'
+order by profit asc
+
+--2. Query transaksi yang untung saja yang terjadi pada Q1 2018 di kota Henderson. diurutkan dari keuntungan terbesar
+select 
+*
+from
+`tokopaedi.orders`
+where
+profit > 0 
+and
+(order_date between '2018-01-01' and '2018-03-31')
+and
+city = 'Henderson'
+order by profit desc
+
+--prefix & alias
+--alias hanya berlaku saat ditulis di query (temporal) sedangkan alter (permanen)
+select
+customer_name as nama_konsumen,
+order_date as tanggal_pemesanan
+from
+`tokopaedi.orders`
+
+select
+*
+from
+`tokopaedi.orders`

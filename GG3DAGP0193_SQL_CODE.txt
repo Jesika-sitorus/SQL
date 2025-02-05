@@ -1,0 +1,91 @@
+#Jawaban no 1
+SELECT
+q.creation_date as creation_date, 
+q.body as question,
+a.body as answer
+from
+`bigquery-public-data.stackoverflow.posts_questions`
+q
+left join
+`bigquery-public-data.stackoverflow.posts_answers` a
+on a.id = q.id
+where q.creation_date between '2020-01-01' and '2020-01-31'
+
+#jawaban no 2
+SELECT
+q.id as q_id,
+q.title as question,
+q.body as question_body,
+q.owner_user_id as question_owner_userid,
+q.accepted_answer_id,
+q.creation_date as creation_date, 
+a.id as a_id,
+a.location as location
+from
+`bigquery-public-data.stackoverflow.posts_questions`
+q
+left join
+`bigquery-public-data.stackoverflow.users` a
+on a.display_name = q.owner_display_name
+where q.creation_date between '2015-01-01' and '2020-12-31'and a.location = 'indonesia'
+
+#Jawaban no 3
+SELECT
+q.user_id as user_id,
+q.date as date, 
+a.display_name as display_name
+from
+`bigquery-public-data.stackoverflow.badges`
+q
+inner join 
+`bigquery-public-data.stackoverflow.users` a
+on a.id = q.user_id
+where date between '2020-01-01' and '2020-01-31'
+
+#jawaban no 4
+SELECT
+q.creation_date as creation_date, q.answer_count
+from
+`bigquery-public-data.stackoverflow.posts_questions`
+q
+left join
+`bigquery-public-data.stackoverflow.users` a
+on a.display_name = q.owner_display_name
+order by q.answer_count desc
+
+#jawaban no 5
+SELECT 
+q.last_editor_user_id as count_editor, a.display_name, 
+TIMESTAMP(a.creation_date) AS later_timestamp,
+  TIMESTAMP(q.last_activity_date) AS earlier_timestamp,
+  TIMESTAMP_DIFF(TIMESTAMP "2010-07-07 10:20:00+00", TIMESTAMP "2008-12-25 15:30:00+00", DAY) AS days
+from
+`bigquery-public-data.stackoverflow.posts_answers`
+q
+left join
+`bigquery-public-data.stackoverflow.users` a
+on a.id = q.id
+where q.last_editor_user_id > 5000
+
+#jawaban no 6
+SELECT 
+location, count(id) as user_count
+from
+`bigquery-public-data.stackoverflow.users` a
+where location != 'null'
+group by location 
+order by count(id) desc
+
+#jawaban no 7
+SELECT 
+q.last_editor_user_id as count_editor, 
+TIMESTAMP(a.creation_date) AS later_timestamp,
+  TIMESTAMP(q.last_activity_date) AS earlier_timestamp,
+  TIMESTAMP_DIFF(TIMESTAMP "2010-07-07 10:20:00+00", TIMESTAMP "2008-12-25 15:30:00+00", DAY) AS number_of_active_years
+from
+`bigquery-public-data.stackoverflow.posts_questions`
+q
+left join
+`bigquery-public-data.stackoverflow.users` a
+on a.id = q.id
+ORDER BY q.last_editor_user_id desc

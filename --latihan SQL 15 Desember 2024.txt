@@ -1,0 +1,71 @@
+--latihan 15 Desember 2024
+--latihan SQL
+--bisa yukk :)
+
+with data_bersih as (
+select 
+`lister-item-header` as judul,
+certificate,
+rating,
+runtime,
+genre,
+votes
+from
+`Netflix_data.tabel_netflix`
+)
+, rata_rating_data as (
+  select avg(rating) rerata_rating
+  from data_bersih
+)
+, votes_rating as (
+  select avg(votes) rata_vote
+  from data_bersih
+)
+--jika ingin mengatahui judul film yang memiliki rating dan votes yang diatas rata-rata
+,rating_and_votes as (select 
+judul,
+certificate,
+genre,
+rating,
+votes
+from
+data_bersih
+where rating > (select rerata_rating from rata_rating_data)and
+votes > (select rata_vote from votes_rating)
+order by rating desc)
+, rating_saja as (
+  select 
+judul,
+certificate,
+genre,
+rating,
+votes
+from
+data_bersih
+where rating > (select rerata_rating from rata_rating_data)
+order by rating desc)
+, votes_saja as (
+select 
+judul,
+genre,
+certificate,
+rating,
+votes
+from
+data_bersih
+where votes > (select rata_vote from votes_rating)
+order by rating desc
+)
+, genrecom as (--mencari film yang memiliki genre tertentu
+select*from votes_saja
+where genre like '%Comedy%'
+)
+--mencari data yang null dari certificate
+select judul,
+certificate,
+rating,
+runtime,
+genre,
+votes 
+from data_bersih
+where certificate is null

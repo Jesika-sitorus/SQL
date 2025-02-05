@@ -1,0 +1,63 @@
+-- membuat database
+create database nama_database
+
+--men'jatuh'kan database dari meja kerja
+drop DATABASE tabel_karyawan
+
+
+
+--membuat table (mendefinisikan kolom)
+--primary key membuat tabel tidak kosong dan duplikat
+CREATE table tabel_karyawan(
+		id_karyawan INT PRIMARY key,
+  		nama VARCHAR,
+  		jabatan VARCHAR,
+  		umur int,
+  		tanggal_masuk DATE
+)
+--Cara1 : default (urutan)
+--memasukkan konten ke table
+--format tanggal (yyyy-mm-dd)
+insert into tabel_karyawan values
+(1,'Jesika Sitorus','manager', 24,'2020-02-01'),
+(2,'leomord','manager',35, '2025-03-01'),
+(3,'Nabila','staff',20, '2027-07-01')
+
+--Cara2 : urutan kolom yang kustom
+insert into tabel_karyawan (id_karyawan, nama, jabatan) VALUES
+(4,'Salsabila','staff')
+
+--mengambil data
+SELECT * from tabel_karyawan 
+
+
+--menghapus tabel
+drop table tabel_karyawan
+
+--menghapus data dari tabeldemo
+delete from tabel_karyawan where nama = 'salsabila'
+
+--menghapus semua data
+delete from tabel_karyawan
+
+--update data
+update tabel_karyawan
+set umur = 50
+where id_karyawan = 4
+
+--manipulasi kolom
+--a. menambahkan kolom
+ALTER TABLE tabel_karyawan 
+ADD COLUMN zodiak VARCHAR
+
+--b.memusnahkan column
+alter table tabel_karyawan
+drop column zodiak
+
+--mengganti tipe data dari kolom
+ALTER TABLE tabel_karyawan
+ALTER COLUMN id_karyawan type VARCHAR
+
+--mengubah nama tabel
+ALTER TABLE tabel_karyawan
+RENAME column nama to nama_depan

@@ -1,0 +1,103 @@
+with all_data as (
+select Product_ID, 
+Customer_ID,
+Transaction_ID,
+Purchase_Frequency,
+Average_Order_Value,
+Most_Frequent_Category,
+Time_Between_Purchases,
+Region,
+Churn_Probability,
+Lifetime_Value,
+Launch_Date,
+Peak_Sales_Date,
+Season,
+Preferred_Purchase_Times,
+Retention_Strategy
+from `sales_and_customer.tabel_sales_customer`
+)
+, rata_churn as (
+  select * from all_data
+  where Churn_Probability >= 0.8
+)
+, rata_purchase as (
+  select sum (Purchase_Frequency)/count (distinct(Customer_ID)) AS rerata_frekuensi
+  from all_data
+)
+
+--mengetahui rata churn per customer dan rata lifetime per customer pada kategori
+--diketaahui bahwa avg churn berbanding lurus dengan avg lifetime
+select 
+Most_Frequent_Category as category,
+sum(Churn_Probability)/count(distinct(Customer_ID)) as rata_churn_per_customer,
+sum (Lifetime_Value)/count(distinct(Customer_ID)) as rata_lifetime_per_customer
+from rata_churn
+where Purchase_Frequency > (select * from rata_purchase)
+group by 
+Most_Frequent_Category
+
+
+--total pembelian per customer berdasarkan strategi marketing yan diterapkan
+select 
+Retention_Strategy,
+sum (Purchase_Frequency)/count (distinct(Customer_ID)) as jumlah_purchase_per_customer,
+avg(Average_Order_Value) as avg_value,
+avg (Time_Between_Purchases) as avg_time
+from rata_churn
+group by Retention_strategy
+order by avg_value desc
+
+--total pembeli, total pembelian per customer, avg order value, wakt yang dibutuhkan berdasarkan region
+select 
+Region,
+count (distinct(Customer_ID)) as jumlah_customer,
+sum (Purchase_Frequency)/count (distinct(Customer_ID)) as jumlah_purchase_per_customer,
+avg(Average_Order_Value) as avg_value,
+avg (Time_Between_Purchases) as avg_time
+from rata_churn
+group by Region
+order by avg_value desc
+
+--total pembeli, total pembelian per customer, avg order value, wakt yang dibutuhkan berdasarkan category
+select 
+Most_Frequent_Category as category,
+count (distinct(Customer_ID)) as jumlah_customer,
+sum (Purchase_Frequency)/count (distinct(Customer_ID)) as jumlah_purchase_per_customer,
+avg(Average_Order_Value) as avg_value,
+avg (Time_Between_Purchases) as avg_time
+from rata_churn
+group by Most_Frequent_Category
+order by jumlah_customer desc
+
+
+
+
+--total pembeli, total pembelian per customer, avg order value, wakt yang dibutuhkan berdasarkan category 
+--dimana ada di North America dan South America
+--diurut berdasarkan jumlah customer
+select 
+Most_Frequent_Category as category,
+count (distinct(Customer_ID)) as jumlah_customer,
+sum (Purchase_Frequency)/count (distinct(Customer_ID)) as jumlah_purchase_per_customer,
+avg(Average_Order_Value) as avg_value,
+avg (Time_Between_Purchases) as avg_time
+from rata_churn
+where region in ('North America','South America')
+group by Most_Frequent_Category
+order by jumlah_customer desc
+
+
+
+--total pembeli, total pembelian per customer, avg order value, wakt yang dibutuhkan berdasarkan category 
+--dimana churn probability >= 0.9
+--diurut berdasarkan avg_time
+select 
+Most_Frequent_Category as category,
+count (distinct(Customer_ID)) as jumlah_customer,
+sum (Purchase_Frequency)/count (distinct(Customer_ID)) as jumlah_purchase_per_customer,
+avg(Average_Order_Value) as avg_value,
+avg (Time_Between_Purchases) as avg_time
+from rata_churn
+where Churn_Probability >= 0.9
+group by Most_Frequent_Category
+order by avg_time asc
